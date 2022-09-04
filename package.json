@@ -1,0 +1,44 @@
+{
+  "name": "Cloud Business",
+  "version": "1.0.0",
+  "description": "A web application to buy or sell products independently",
+  "main": "server.js",
+  "scripts": {
+    "start:dev": "nodemon server.js",
+    "start:prod": "NODE_ENV=production nodemon server.js",
+    "test": "jest --detectOpenHandles",
+    "pretest": ""
+  },
+  "keywords": [],
+  "author": "Tonmoy Chiran",
+  "license": "ISC",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.1",
+    "express": "^4.18.1",
+    "express-csp-header": "^5.1.0",
+    "express-mongo-sanitize": "^2.2.0",
+    "express-rate-limit": "^6.4.0",
+    "helmet": "^5.1.0",
+    "hpp": "^0.2.3",
+    "http-status": "^1.5.2",
+    "jest": "^29.0.2",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^5.13.14",
+    "morgan": "^1.10.0",
+    "pm2": "^5.2.0",
+    "supertest": "^6.2.4",
+    "validator": "^13.7.0",
+    "xss-clean": "^0.1.1"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "coveragePathIgnorePatterns": [
+      "/node_modules/"
+    ]
+  },
+  "devDependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
