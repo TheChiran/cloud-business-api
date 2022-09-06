@@ -26,7 +26,10 @@ const userRegisterValidationRules = () => {
       .withMessage('Password confirm is required')
       .custom((value, { req }) => {
         if (value !== req.body.password) {
-          throw new Error('Password confirmation does not match password');
+          throw new AppError(
+            httpStatus.BAD_REQUEST,
+            'Password confirmation does not match password'
+          );
         }
 
         // Indicates the success of this synchronous custom validator

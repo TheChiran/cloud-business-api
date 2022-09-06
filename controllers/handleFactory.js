@@ -2,6 +2,7 @@ const catchAsync = require('../utils/catchAsync');
 const AppError = require('../utils/appError');
 const httpStatus = require('http-status');
 const APIFeatures = require('../utils/apiFeatures');
+const mongooseObjectId = require('mongoose').Types.ObjectId;
 
 exports.deleteOne = (Model) =>
   catchAsync(async (req, res, next) => {
@@ -52,6 +53,12 @@ exports.createOne = (Model) =>
 
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
+    if (!mongooseObjectId.isValid(req.params.id))
+      // valid when db is mongodb
+      return next(
+        new AppError('No document found with that ID', httpStatus.NOT_FOUND)
+      );
+
     let query = Model.findById(req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;
@@ -74,9 +81,9 @@ exports.getAll = (Model) =>
   catchAsync(async (req, res, next) => {
     // To allow for nested GET reviews on tour (hack)
     let filter = {};
-    if (req.params.tourId)
+    if (req.params.id)
       filter = {
-        tour: req.params.tourId,
+        id: req.params.id,
       };
 
     const features = new APIFeatures(Model.find(filter), req.query)
