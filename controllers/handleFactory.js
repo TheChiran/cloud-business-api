@@ -53,12 +53,6 @@ exports.createOne = (Model) =>
 
 exports.getOne = (Model, populateOptions) =>
   catchAsync(async (req, res, next) => {
-    if (!mongooseObjectId.isValid(req.params.id))
-      // valid when db is mongodb
-      return next(
-        new AppError('No document found with that ID', httpStatus.NOT_FOUND)
-      );
-
     let query = Model.findById(req.params.id);
     if (populateOptions) query = query.populate(populateOptions);
     const doc = await query;

@@ -15,11 +15,12 @@ const defaultURL = `/api/v1/category`;
 const testingUrlList = {
   url: `${defaultURL}`,
 };
+const mongoose = require('mongoose');
 
 setupTestDB();
 
 describe('Product category test cases', () => {
-  describe('POST /api/v1/category', () => {
+  describe('Method: POST /api/v1/category', () => {
     let newCategory;
 
     beforeEach(() => {
@@ -68,7 +69,7 @@ describe('Product category test cases', () => {
     });
   });
 
-  describe('GET /api/v1/category', () => {
+  describe('Method: GET /api/v1/category', () => {
     it('should return status code 200 and status value success', async () => {
       await insertCategoryList([
         categoryOne,
@@ -107,6 +108,73 @@ describe('Product category test cases', () => {
           data: expect.anything(),
         },
       });
+    });
+
+    it('should return status code 400 ', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      const res = await request(app).get(
+        `${testingUrlList.url}/${mongoose.Types.ObjectId()}}`
+      );
+
+      if (process.env === 'development') {
+        expect(res.status).toEqual(httpStatus.INTERNAL_SERVER_ERROR);
+      } else if (process.env === 'production') {
+        expect(res.status).toEqual(httpStatus.BAD_REQUEST);
+      }
+    });
+  });
+
+  describe('Method: DELETE /api/v1/category/:id', () => {
+    it('should return status 204 if id exists', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .delete(`${testingUrlList.url}/${categoryOne._id}`)
+        .expect(httpStatus.NO_CONTENT);
+
+      const categoryList = await request(app).get(`${testingUrlList.url}`);
+      expect(categoryList.body.results).toBe(3);
+    });
+
+    it('should return status 404 if id does not exists', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .delete(`${testingUrlList.url}/${mongoose.Types.ObjectId()}`)
+        .expect(httpStatus.NOT_FOUND);
+    });
+
+    it('should return status 400 if id is not valid mongoose object id', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      const res = await request(app).delete(`${testingUrlList.url}/123`);
+
+      if (process.env === 'development') {
+        expect(res.status).toEqual(httpStatus.INTERNAL_SERVER_ERROR);
+      } else if (process.env === 'production') {
+        expect(res.status).toEqual(httpStatus.BAD_REQUEST);
+      }
     });
   });
 });

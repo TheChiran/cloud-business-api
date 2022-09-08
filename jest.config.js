@@ -12,4 +12,5 @@ module.exports = {
     'tests',
   ],
   coverageReporters: ['text', 'lcov', 'clover', 'html'],
+  autoRun: 'false',
 };

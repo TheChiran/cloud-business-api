@@ -20,6 +20,10 @@ router
   )
   .get(productCategoryController.getList);
 
-router.route('/:id').get(productCategoryController.getOne);
+router
+  .route('/:id')
+  .get(productCategoryController.getOne)
+  .delete(productCategoryController.delete)
+  .patch(productCategoryController.update);
 
 module.exports = router;

@@ -4,9 +4,10 @@
   "description": "A web application to buy or sell products independently",
   "main": "server.js",
   "scripts": {
-    "start:dev": "nodemon server.js",
+    "start:dev": "NODE_ENV=development nodemon server.js",
     "start:prod": "cross-env NODE_ENV=production nodemon server.js",
-    "test": "jest -i --colors --verbose --detectOpenHandles",
+    "test:dev": "NODE_ENV=development jest --setupFiles dotenv/config -i --colors --verbose --detectOpenHandles",
+    "test:prod": "NODE_ENV=production jest --setupFiles dotenv/config -i --colors --verbose --detectOpenHandles",
     "test:watch": "jest -i --watchAll",
     "coverage": "jest -i --coverage",
     "coverage:coveralls": "jest -i --coverage --coverageReporters=text-lcov | coveralls",

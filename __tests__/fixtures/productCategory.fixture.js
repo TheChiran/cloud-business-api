@@ -12,7 +12,7 @@ const categoryOne = {
 const categoryTwo = {
   _id: mongoose.Types.ObjectId(),
   name: faker.name.findName(),
-  isActive: true,
+  isActive: false,
 };
 
 const categoryThree = {
