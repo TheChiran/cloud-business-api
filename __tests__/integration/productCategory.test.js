@@ -17,16 +17,23 @@ const testingUrlList = {
 };
 
 const mongoose = require('mongoose');
-const { adminAccessToken } = require('./../fixtures/token.fixture');
-const { insertUsers, admin } = require('../fixtures/user.fixture');
+const {
+  adminAccessToken,
+  userOneAccessToken,
+} = require('./../fixtures/token.fixture');
+const { insertUsers, admin, userOne } = require('../fixtures/user.fixture');
 
 setupTestDB();
 
 describe('Product category test cases', () => {
+  beforeEach(async () => {
+    await insertUsers([admin, userOne]);
+  });
+
   describe('Method: POST /api/v1/category', () => {
     let newCategory;
 
-    beforeEach(() => {
+    beforeEach(async () => {
       newCategory = {
         name: faker.name.fullName(),
       };
@@ -40,10 +47,26 @@ describe('Product category test cases', () => {
 
       const response = await request(app)
         .post(testingUrlList.url)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
         .send(newCategory)
         .expect(httpStatus.CREATED);
 
       expect(response.body).toMatchObject(expectedData);
+    });
+
+    it('should return status 401 with message unauthorized if access token is not present', async () => {
+      await request(app)
+        .post(testingUrlList.url)
+        .send(newCategory)
+        .expect(httpStatus.UNAUTHORIZED);
+    });
+
+    it('should return status 401 with message unauthorized if user role is not admin', async () => {
+      await request(app)
+        .post(testingUrlList.url)
+        .set('Authorization', `Bearer ${userOneAccessToken().token}`)
+        .send(newCategory)
+        .expect(httpStatus.FORBIDDEN);
     });
 
     it('should return status value of success, code 201 and isActive true', async () => {
@@ -51,6 +74,7 @@ describe('Product category test cases', () => {
 
       const response = await request(app)
         .post(testingUrlList.url)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
         .send(newCategory)
         .expect(httpStatus.CREATED);
 
@@ -63,6 +87,7 @@ describe('Product category test cases', () => {
       const response = await request(app)
         .post(testingUrlList.url)
         .send(newCategory)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
         .expect(httpStatus.UNPROCESSABLE_ENTITY);
 
       expect(response.body).toMatchObject({
@@ -135,7 +160,6 @@ describe('Product category test cases', () => {
 
   describe('Method: DELETE /api/v1/category/:id', () => {
     it('should return status 204 if id exists', async () => {
-      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -152,8 +176,34 @@ describe('Product category test cases', () => {
       expect(categoryList.body.results).toBe(3);
     });
 
+    it('should return status 403 access token is from role user', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .delete(`${testingUrlList.url}/${categoryOne._id}`)
+        .set('Authorization', `Bearer ${userOneAccessToken().token}`)
+        .expect(httpStatus.FORBIDDEN);
+    });
+
+    it('Should return status 403(UNAUTHORIZED) if bearer token is not provided', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .delete(`${testingUrlList.url}/${categoryOne._id}`)
+        .expect(httpStatus.UNAUTHORIZED);
+    });
+
     it('should return status 404 if id does not exists', async () => {
-      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -168,7 +218,6 @@ describe('Product category test cases', () => {
     });
 
     it('should return status 400 if id is not valid mongoose object id', async () => {
-      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -190,7 +239,6 @@ describe('Product category test cases', () => {
 
   describe('METHOD: PATCH /api/v1/category/:id', () => {
     it('should return status success and status code 200 if id is ok and data is updated', async () => {
-      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -206,6 +254,33 @@ describe('Product category test cases', () => {
 
       expect(res.body.status).toEqual('success');
       expect(res.body.data.doc.isActive).toEqual(false);
+    });
+
+    it('should return status 403 access token is from role user', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .patch(`${testingUrlList.url}/${categoryOne._id}`)
+        .set('Authorization', `Bearer ${userOneAccessToken().token}`)
+        .expect(httpStatus.FORBIDDEN);
+    });
+
+    it('should return status success and status code 200 if id is ok and data is updated', async () => {
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      await request(app)
+        .patch(`${testingUrlList.url}/${categoryOne._id}`)
+        .expect(httpStatus.UNAUTHORIZED);
     });
   });
 });

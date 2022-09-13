@@ -31,6 +31,7 @@ const handleValidationErrorDB = (error) => {
 
 const sendErrorDev = (error, req, res) => {
   // API
+  // console.log('dev error called status code: ', error.statusCode);
   res.status(error.statusCode).json({
     status: error.status,
     message: error.message,

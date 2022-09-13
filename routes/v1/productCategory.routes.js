@@ -10,19 +10,19 @@ const router = express.Router();
 
 // this will work for rest of below routes (after this middleware)
 
-router
-  .route('/')
-  .post(
-    productCategoryValidationRules(),
-    productCategoryValidate,
-    productCategoryController.create
-  )
-  .get(productCategoryController.getList);
+router.get('/', productCategoryController.getList);
 
 router.get('/:id', productCategoryController.getOne);
 
 router.use(authController.protect);
 router.use(authController.restrictTo('admin'));
+
+router.post(
+  '/',
+  productCategoryValidationRules(),
+  productCategoryValidate,
+  productCategoryController.create
+);
 
 router
   .route('/:id')
