@@ -2,7 +2,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const faker = require('faker');
-const User = require('../../src/models/user.model');
+const User = require('./../../models/userModel');
 
 const password = 'password1';
 const salt = bcrypt.genSaltSync(8);
@@ -31,13 +31,13 @@ const admin = {
   name: faker.name.findName(),
   email: faker.internet.email().toLowerCase(),
   password,
+  passwordConfirm: password,
   role: 'admin',
-  isEmailVerified: false,
 };
 
 const insertUsers = async (users) => {
   await User.insertMany(
-    users.map((user) => ({ ...user, password: hashedPassword }))
+    users.map((user) => ({ ...user, password, passwordConfirm: password }))
   );
 };
 

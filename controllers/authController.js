@@ -104,20 +104,21 @@ exports.logout = (req, res) => {
 
 exports.protect = catchAsync(async (req, res, next) => {
   // 1) Getting token and check of it's there
-  let token;
+  let token = undefined;
+
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
   ) {
-    token = req.headers.authorization.split(' ')[1];
-  } else if (req.cookies.jwt) {
+    token = req.headers.authorization?.split(' ')[1];
+  } else if (req.cookies?.jwt) {
     token = req.cookies.jwt;
   }
 
   if (!token)
     return next(
       new AppError('Your are not logged in! Please log in to get access.'),
-      401
+      httpStatus.UNAUTHORIZED
     );
 
   // 2) Token verification
@@ -150,7 +151,8 @@ exports.restrictTo =
   (...roles) =>
   (req, res, next) => {
     // roles ['admin','lead-guide']
-    if (!roles.includes(req.user.role))
+    console.log('user', req.user);
+    if (!req.user || !roles.includes(req.user.role))
       return next(
         new AppError('You do not have permission to perform this action', 403)
       );

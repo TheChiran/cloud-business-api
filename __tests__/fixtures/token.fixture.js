@@ -1,25 +1,43 @@
 /* istanbul ignore file */
-const moment = require('moment');
-const config = require('../../src/config/config');
-const { tokenTypes } = require('../../src/config/tokens');
-const tokenService = require('../../src/services/token.service');
 const { userOne, admin } = require('./user.fixture');
+const jwt = require('jsonwebtoken');
 
-const accessTokenExpires = moment().add(
-  config.jwt.accessExpirationMinutes,
-  'minutes'
-);
+userOne.password = undefined;
+admin.password = undefined;
 
-const userOneAccessToken = tokenService.generateToken(
-  userOne._id,
-  accessTokenExpires,
-  tokenTypes.ACCESS
-);
-const adminAccessToken = tokenService.generateToken(
-  admin._id,
-  accessTokenExpires,
-  tokenTypes.ACCESS
-);
+const userOneAccessToken = () => {
+  return {
+    token: jwt.sign(
+      {
+        id: userOne._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    ),
+    data: {
+      userOne,
+    },
+  };
+};
+
+const adminAccessToken = () => {
+  return {
+    token: jwt.sign(
+      {
+        id: admin._id,
+      },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: process.env.JWT_EXPIRES_IN,
+      }
+    ),
+    data: {
+      admin,
+    },
+  };
+};
 
 module.exports = {
   userOneAccessToken,

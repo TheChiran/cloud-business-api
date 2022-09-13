@@ -15,7 +15,10 @@ const defaultURL = `/api/v1/category`;
 const testingUrlList = {
   url: `${defaultURL}`,
 };
+
 const mongoose = require('mongoose');
+const { adminAccessToken } = require('./../fixtures/token.fixture');
+const { insertUsers, admin } = require('../fixtures/user.fixture');
 
 setupTestDB();
 
@@ -132,6 +135,7 @@ describe('Product category test cases', () => {
 
   describe('Method: DELETE /api/v1/category/:id', () => {
     it('should return status 204 if id exists', async () => {
+      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -141,6 +145,7 @@ describe('Product category test cases', () => {
 
       await request(app)
         .delete(`${testingUrlList.url}/${categoryOne._id}`)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
         .expect(httpStatus.NO_CONTENT);
 
       const categoryList = await request(app).get(`${testingUrlList.url}`);
@@ -148,6 +153,7 @@ describe('Product category test cases', () => {
     });
 
     it('should return status 404 if id does not exists', async () => {
+      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -157,10 +163,12 @@ describe('Product category test cases', () => {
 
       await request(app)
         .delete(`${testingUrlList.url}/${mongoose.Types.ObjectId()}`)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
         .expect(httpStatus.NOT_FOUND);
     });
 
     it('should return status 400 if id is not valid mongoose object id', async () => {
+      await insertUsers([admin]);
       await insertCategoryList([
         categoryOne,
         categoryTwo,
@@ -168,13 +176,36 @@ describe('Product category test cases', () => {
         categoryFour,
       ]);
 
-      const res = await request(app).delete(`${testingUrlList.url}/123`);
+      const res = await request(app)
+        .delete(`${testingUrlList.url}/123`)
+        .set('Authorization', `Bearer ${adminAccessToken().token}`);
 
       if (process.env === 'development') {
         expect(res.status).toEqual(httpStatus.INTERNAL_SERVER_ERROR);
       } else if (process.env === 'production') {
         expect(res.status).toEqual(httpStatus.BAD_REQUEST);
       }
+    });
+  });
+
+  describe('METHOD: PATCH /api/v1/category/:id', () => {
+    it('should return status success and status code 200 if id is ok and data is updated', async () => {
+      await insertUsers([admin]);
+      await insertCategoryList([
+        categoryOne,
+        categoryTwo,
+        categoryThree,
+        categoryFour,
+      ]);
+
+      const res = await request(app)
+        .patch(`${testingUrlList.url}/${categoryOne._id}`)
+        .send({ isActive: false })
+        .set('Authorization', `Bearer ${adminAccessToken().token}`)
+        .expect(httpStatus.OK);
+
+      expect(res.body.status).toEqual('success');
+      expect(res.body.data.doc.isActive).toEqual(false);
     });
   });
 });

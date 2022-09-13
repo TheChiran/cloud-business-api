@@ -9,7 +9,6 @@ const {
 const router = express.Router();
 
 // this will work for rest of below routes (after this middleware)
-// router.use(authController.restrictTo('admin'));
 
 router
   .route('/')
@@ -20,9 +19,13 @@ router
   )
   .get(productCategoryController.getList);
 
+router.get('/:id', productCategoryController.getOne);
+
+router.use(authController.protect);
+router.use(authController.restrictTo('admin'));
+
 router
   .route('/:id')
-  .get(productCategoryController.getOne)
   .delete(productCategoryController.delete)
   .patch(productCategoryController.update);
 
