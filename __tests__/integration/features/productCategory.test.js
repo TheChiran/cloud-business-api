@@ -1,7 +1,7 @@
 const request = require('supertest');
-const app = require('./../../app/app');
+const app = require('../../../app/app');
 const httpStatus = require('http-status');
-const setupTestDB = require('../../configs/setupTestDB');
+const setupTestDB = require('../../../configs/setupTestDB');
 const { faker } = require('@faker-js/faker');
 const {
   categoryOne,
@@ -9,7 +9,7 @@ const {
   categoryThree,
   categoryFour,
   insertCategoryList,
-} = require('./../fixtures/productCategory.fixture');
+} = require('../../fixtures/productCategory.fixture');
 
 const defaultURL = `/api/v1/category`;
 const testingUrlList = {
@@ -20,8 +20,8 @@ const mongoose = require('mongoose');
 const {
   adminAccessToken,
   userOneAccessToken,
-} = require('./../fixtures/token.fixture');
-const { insertUsers, admin, userOne } = require('../fixtures/user.fixture');
+} = require('../../fixtures/token.fixture');
+const { insertUsers, admin, userOne } = require('../../fixtures/user.fixture');
 
 setupTestDB();
 

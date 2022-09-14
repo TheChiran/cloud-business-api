@@ -1,10 +1,10 @@
 const express = require('express');
 const authController = require('../../controllers/authController');
 const productCategoryController = require('../../controllers/productCategoryController');
+const { validateInputFields } = require('../../validations/validate');
 const {
-  productCategoryValidationRules,
-  productCategoryValidate,
-} = require('./../../validations/productCategory.validation');
+  productCategoryCreateValidationRules,
+} = require('./../../validations/productCategory.validations.rules');
 
 const router = express.Router();
 
@@ -19,8 +19,8 @@ router.use(authController.restrictTo('admin'));
 
 router.post(
   '/',
-  productCategoryValidationRules(),
-  productCategoryValidate,
+  productCategoryCreateValidationRules(),
+  validateInputFields,
   productCategoryController.create
 );
 
