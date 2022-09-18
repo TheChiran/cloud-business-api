@@ -19,6 +19,12 @@ const userSchema = new mongoose.Schema({
     type: String,
     default: 'default.jpg',
   },
+  address: {
+    type: String,
+  },
+  phone: {
+    type: String,
+  },
   role: {
     type: String,
     enum: ['user', 'admin'],
@@ -41,6 +47,7 @@ const userSchema = new mongoose.Schema({
       message: 'Passwords are not the same!',
     },
   },
+
   passwordChangedAt: Date,
   passwordResetToken: String,
   passwordResetExpires: Date,

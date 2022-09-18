@@ -4,7 +4,7 @@ const productCategoryController = require('../../controllers/productCategoryCont
 const { validateInputFields } = require('../../validations/validate');
 const {
   productCategoryCreateValidationRules,
-} = require('./../../validations/productCategory.validations.rules');
+} = require('../../validations/productCategory.rules');
 
 const router = express.Router();
 
